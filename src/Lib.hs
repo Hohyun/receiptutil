@@ -1,6 +1,11 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Lib
     ( extractBankStmts
+    , testFn
     ) where
+
+import Database.PostgreSQL.Simple
 
 -- extract concerned bankstatements with checking amt of a PaymentID in ledger table
 -- checking -> [checking] (same day) -> [bankstmt] --> [concerned bankstmt]
@@ -39,3 +44,26 @@ allCombs r rs = filter (elem r) $ cs
   where
     cnt = length rs
     cs = concat $ [combination n rs | n <- [1 .. cnt]]
+
+aprsPG :: ConnectInfo
+aprsPG = defaultConnectInfo
+  { connectHost = "aprs.jinair.com"
+  , connectDatabase = "aprs"
+  , connectUser = "postgres"
+  , connectPassword = "LJ2008*"
+  }
+
+data Receipt = Receipt
+    { settleco :: String
+    , merchantid :: String
+    , date :: String
+    , amount :: Double
+    } deriving (Show)
+
+instanceFromRow Receipt where
+  fromRow = Receipt <$> filed <*> field <*> field <*> field
+
+testFn :: IO ()
+testFn = do
+  conn <- connect aprsPG
+  mapM_ print =<< (query_ conn "SELECT 1 + 1" :: IO [Only Int])
