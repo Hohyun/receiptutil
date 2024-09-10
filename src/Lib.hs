@@ -60,8 +60,8 @@ data Receipt = Receipt
     , amount :: Double
     } deriving (Show)
 
-instanceFromRow Receipt where
-  fromRow = Receipt <$> filed <*> field <*> field <*> field
+-- instance FromRow Receipt where
+--   fromRow = Receipt <$> filed <*> field <*> field <*> field
 
 testFn :: IO ()
 testFn = do
